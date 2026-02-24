@@ -1,0 +1,8 @@
+streamlit
+pandas
+Pillow
+requests
+cloudinary
+python-dotenv
+openai
+streamlit-option-menu
