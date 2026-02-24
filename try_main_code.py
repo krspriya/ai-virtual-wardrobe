@@ -15,27 +15,34 @@ import cloudinary
 import cloudinary.uploader
 import cloudinary.api
 
-# Load environment variables
+# Load environment variables (for local .env fallback)
 load_dotenv()
+
+# Helper: read from st.secrets (Streamlit Cloud) or os.getenv (local .env)
+def get_secret(key, default=None):
+    try:
+        return st.secrets[key]
+    except (KeyError, FileNotFoundError):
+        return os.getenv(key, default)
 
 # Cloudinary configuration
 cloudinary.config(
-    cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
-    api_key=os.getenv("CLOUDINARY_API_KEY"),
-    api_secret=os.getenv("CLOUDINARY_API_SECRET"),
+    cloud_name=get_secret("CLOUDINARY_CLOUD_NAME"),
+    api_key=get_secret("CLOUDINARY_API_KEY"),
+    api_secret=get_secret("CLOUDINARY_API_SECRET"),
     secure=True
 )
 
 # OpenRouter configuration
 openrouter_client = OpenAI(
     base_url="https://openrouter.ai/api/v1",
-    api_key=os.getenv("OPENROUTER_API_KEY"),
+    api_key=get_secret("OPENROUTER_API_KEY"),
     default_headers={
         "HTTP-Referer": "http://localhost:8501",
         "X-Title": "Virtual Wardrobe",
     }
 )
-OPENROUTER_MODEL = os.getenv("OPENROUTER_MODEL", "meta-llama/llama-3.1-8b-instruct:free")
+OPENROUTER_MODEL = get_secret("OPENROUTER_MODEL", "meta-llama/llama-3.1-8b-instruct:free")
 
 # Metadata file path
 METADATA_FILE = 'metadata.csv'
